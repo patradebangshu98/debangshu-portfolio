@@ -309,7 +309,13 @@ section {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 3rem;
-    align-items: start;
+    align-items: stretch;
+}
+
+.about-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .about-text p {
@@ -317,11 +323,14 @@ section {
     color: var(--light-text);
     line-height: 1.8;
     font-size: 1.05rem;
+    flex-grow: 1;
 }
 
 .about-highlights {
     display: grid;
     gap: 1.5rem;
+    align-items: start;
+    height: 100%;
 }
 
 .highlight-card {
