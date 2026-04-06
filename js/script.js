@@ -50,15 +50,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const navMenu = document.querySelector('.nav-menu');
     
     if (hamburger) {
-        hamburger.addEventListener('click', function() {
-            navMenu.style.display = navMenu.style.display === 'flex' ? 'none' : 'flex';
+        hamburger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            navMenu.classList.toggle('active');
         });
 
         // Close menu when a link is clicked
         navLinks.forEach(link => {
             link.addEventListener('click', function() {
-                navMenu.style.display = 'none';
+                navMenu.classList.remove('active');
             });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
+                navMenu.classList.remove('active');
+            }
         });
     }
 
