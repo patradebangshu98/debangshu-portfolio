@@ -1,175 +1,70 @@
-// ============================================
-// Debangshu Patra Portfolio - JavaScript
-// ============================================
-
-// Smooth scrolling and active nav link
-document.addEventListener('DOMContentLoaded', function() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    const sections = document.querySelectorAll('section');
-
-    // Smooth scroll for nav links
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            
-            if (targetSection) {
-                targetSection.scrollIntoView({ behavior: 'smooth' });
-                
-                // Update active link
-                navLinks.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-            }
-        });
-    });
-
-    // Update active nav link on scroll
-    window.addEventListener('scroll', function() {
-        let current = '';
-        
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            
-            if (pageYOffset >= sectionTop - 200) {
-                current = section.getAttribute('id');
-            }
-        });
-
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${current}`) {
-                link.classList.add('active');
-            }
-        });
-    });
-
-    // Hamburger menu toggle
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
-    
-    if (hamburger) {
-        hamburger.addEventListener('click', function(e) {
-            e.stopPropagation();
-            navMenu.classList.toggle('active');
-        });
-
-        // Close menu when a link is clicked
-        navLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                navMenu.classList.remove('active');
-            });
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
-                navMenu.classList.remove('active');
-            }
-        });
-    }
-
-    // Contact form handling
-    const contactForm = document.querySelector('.contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form values
-            const name = this.querySelector('input[type="text"]').value;
-            const email = this.querySelector('input[type="email"]').value;
-            const message = this.querySelector('textarea').value;
-            
-            // Simple validation
-            if (name.trim() === '' || email.trim() === '' || message.trim() === '') {
-                alert('Please fill in all fields');
-                return;
-            }
-            
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                alert('Please enter a valid email address');
-                return;
-            }
-            
-            // Show success message
-            alert('Thank you for your message! I will get back to you soon.');
-            
-            // Reset form
-            this.reset();
-        });
-    }
-
-    // Add scroll animation to elements
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px'
-    };
-
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, observerOptions);
-
-    // Observe work cards and blog cards
-    document.querySelectorAll('.work-card, .blog-card, .highlight-card').forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(el);
-    });
+const cursor = document.getElementById('cursor');
+const follower = document.getElementById('cursorFollower');
+let mouseX = 0, mouseY = 0, followerX = 0, followerY = 0;
+document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; cursor.style.left = mouseX + 'px'; cursor.style.top = mouseY + 'px'; });
+function animateFollower() { followerX += (mouseX - followerX) * 0.12; followerY += (mouseY - followerY) * 0.12; follower.style.left = followerX + 'px'; follower.style.top = followerY + 'px'; requestAnimationFrame(animateFollower); }
+animateFollower();
+document.querySelectorAll('a, button, input, textarea, .work-card, .blog-card, .about-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.width = '18px'; cursor.style.height = '18px'; follower.style.width = '52px'; follower.style.height = '52px'; });
+    el.addEventListener('mouseleave', () => { cursor.style.width = '10px'; cursor.style.height = '10px'; follower.style.width = '36px'; follower.style.height = '36px'; });
 });
 
-// Mobile menu responsive behavior
-window.addEventListener('resize', function() {
-    const navMenu = document.querySelector('.nav-menu');
-    if (window.innerWidth > 768) {
-        navMenu.style.display = 'flex';
-    } else {
-        navMenu.style.display = 'none';
-    }
-});
-
-// Add ripple effect to buttons
-document.querySelectorAll('.btn').forEach(button => {
-    button.addEventListener('click', function(e) {
-        const ripple = document.createElement('span');
-        const rect = this.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
-
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
-        ripple.classList.add('ripple');
-
-        this.appendChild(ripple);
-
-        setTimeout(() => ripple.remove(), 600);
-    });
-});
-
-// Lazy load images
-if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.dataset.src;
-                img.classList.add('loaded');
-                observer.unobserve(img);
-            }
-        });
-    });
-
-    document.querySelectorAll('img[data-src]').forEach(img => imageObserver.observe(img));
+const navbar = document.getElementById('navbar');
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('section[id]');
+function onScroll() {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.getAttribute('id'); });
+    navLinks.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + current) l.classList.add('active'); });
 }
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
 
-console.log('Debangshu Patra Portfolio - Loaded Successfully');
+const hamburger = document.getElementById('hamburger');
+const navLinksEl = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => { hamburger.classList.toggle('open'); navLinksEl.classList.toggle('open'); document.body.style.overflow = navLinksEl.classList.contains('open') ? 'hidden' : ''; });
+navLinks.forEach(l => l.addEventListener('click', () => { hamburger.classList.remove('open'); navLinksEl.classList.remove('open'); document.body.style.overflow = ''; }));
+
+const revealEls = document.querySelectorAll('.about-card, .work-card, .blog-card, .contact-item, .contact-form, .about-text, .section-title, .section-label');
+revealEls.forEach(el => el.classList.add('reveal'));
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const delay = entry.target.closest('.works-grid, .blog-grid, .about-cards, .contact-items') ? Array.from(entry.target.parentElement.children).indexOf(entry.target) * 80 : 0;
+            setTimeout(() => entry.target.classList.add('visible'), delay);
+            revealObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.12 });
+revealEls.forEach(el => revealObserver.observe(el));
+
+const statNums = document.querySelectorAll('.stat-num[data-target]');
+function animateCount(el) {
+    const target = parseInt(el.dataset.target), duration = 1800, startTime = performance.now();
+    function update(t) { const p = Math.min((t - startTime) / duration, 1), e = 1 - Math.pow(1 - p, 3); el.textContent = Math.floor(e * target); if (p < 1) requestAnimationFrame(update); else el.textContent = target; }
+    requestAnimationFrame(update);
+}
+const statsObserver = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) { animateCount(e.target); statsObserver.unobserve(e.target); } }), { threshold: 0.5 });
+statNums.forEach(el => statsObserver.observe(el));
+
+const contactForm = document.getElementById('contactForm');
+const formSuccess = document.getElementById('formSuccess');
+const submitBtn = document.getElementById('submitBtn');
+contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
+    submitBtn.disabled = true;
+    await new Promise(r => setTimeout(r, 1800));
+    submitBtn.innerHTML = '<span>Message Sent!</span><i class="fas fa-check"></i>';
+    submitBtn.style.background = 'linear-gradient(135deg, #3ecfcf, #2aa8a8)';
+    formSuccess.classList.add('show');
+    setTimeout(() => { contactForm.reset(); submitBtn.innerHTML = '<span>Send Message</span><i class="fas fa-paper-plane"></i>'; submitBtn.style.background = ''; submitBtn.disabled = false; formSuccess.classList.remove('show'); }, 4000);
+});
+
+document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', function(e) { const t = document.querySelector(this.getAttribute('href')); if (t && this.getAttribute('href') !== '#') { e.preventDefault(); window.scrollTo({ top: t.offsetTop - 72, behavior: 'smooth' }); } }));
+
+document.querySelectorAll('.work-card, .blog-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => { const r = card.getBoundingClientRect(), rx = (e.clientY - r.top - r.height/2) / (r.height/2) * -5, ry = (e.clientX - r.left - r.width/2) / (r.width/2) * 5; card.style.transform = `translateY(-6px) rotateX(${rx}deg) rotateY(${ry}deg)`; card.style.transition = 'transform 0.1s ease'; });
+    card.addEventListener('mouseleave', () => { card.style.transform = ''; card.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)'; });
+});
